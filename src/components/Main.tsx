@@ -7,11 +7,14 @@ export default function Main() {
   const [recipe, setRecipe] = useState<string>("");
 
   async function getRecipe() {
-    const res = await fetch("https://chef-claude.vercel.app/api/get-recipe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ingredients }),
-    });
+    const res = await fetch(
+      "https://chef-claude-fawn.vercel.app/api/get-recipe",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ingredients }),
+      },
+    );
     const data = await res.json();
     setRecipe(data.recipe);
   }
