@@ -1,13 +1,19 @@
 import { useState } from "react";
-import ClaudeRecipe from "./ClaudeRecipe.tsx";
 import IngredientsList from "./IngredientsList.tsx";
+import ClaudeRecipe from "./ClaudeRecipe.tsx";
 
 export default function Main() {
   const [ingredients, setIngredients] = useState<string[]>([]);
-  const [recipeShown, setRecipeShown] = useState<boolean>(false);
+  const [recipe, setRecipe] = useState<string>("");
 
-  function toggleRecipeShown() {
-    setRecipeShown((prev) => !prev);
+  async function getRecipe() {
+    const res = await fetch("https://chef-claude.vercel.app/api/get-recipe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ingredients }),
+    });
+    const data = await res.json();
+    setRecipe(data.recipe);
   }
 
   function addIngredient(formData: FormData) {
@@ -18,10 +24,10 @@ export default function Main() {
 
   return (
     <main>
-      <form className="add-ingredient-form" action={addIngredient}>
+      <form action={addIngredient} className="add-ingredient-form">
         <input
           type="text"
-          placeholder="e.g oregano"
+          placeholder="e.g. oregano"
           aria-label="Add ingredient"
           name="ingredient"
         />
@@ -29,13 +35,10 @@ export default function Main() {
       </form>
 
       {ingredients.length > 0 && (
-        <IngredientsList
-          ingredients={ingredients}
-          toggleRecipeShown={toggleRecipeShown}
-        />
+        <IngredientsList ingredients={ingredients} getRecipe={getRecipe} />
       )}
 
-      {recipeShown && <ClaudeRecipe />}
+      {recipe && <ClaudeRecipe recipe={recipe} />}
     </main>
   );
 }
